@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Header } from './components/header';
+import { Sidebar } from './components/sidebar';
 import { PaymentTable, PaymentRecord } from './components/payment-table';
 import { AnalyticsDashboard } from './components/analytics-dashboard';
 import { PaymentModal } from './components/add-payment-modal';
@@ -306,6 +307,7 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [payments, setPayments] = useState<PaymentRecord[]>(INITIAL_DATA);
   const [isDark, setIsDark] = useState(true);
+  const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
 
   // State for editing
   const [editingPayment, setEditingPayment] = useState<PaymentRecord | null>(null);
@@ -401,14 +403,23 @@ export default function App() {
       }`}>
       <Toaster position="bottom-right" theme={isDark ? 'dark' : 'light'} />
 
-      <Header
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        isDark={isDark}
-        toggleTheme={() => setIsDark(!isDark)}
-      />
+      <div className="flex min-h-screen">
+        <Sidebar 
+          isExpanded={isSidebarExpanded} 
+          onToggle={() => setIsSidebarExpanded(!isSidebarExpanded)} 
+          isDark={isDark} 
+        />
+        
+        <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+          <Header
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            isDark={isDark}
+            toggleTheme={() => setIsDark(!isDark)}
+            onToggleSidebar={() => setIsSidebarExpanded(!isSidebarExpanded)}
+          />
 
-      <main className="px-6 py-6">
+          <main className="flex-1 px-6 py-6 overflow-y-auto">
         {/* Navigation Tabs */}
         <div className="flex items-center gap-2 mb-6">
           <button
@@ -551,6 +562,8 @@ export default function App() {
         onStatusChange={handleStatusChange}
         isDark={isDark}
       />
+        </div>
+      </div>
     </div>
   );
 }

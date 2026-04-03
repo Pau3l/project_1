@@ -6,14 +6,26 @@ interface HeaderProps {
   setSearchQuery: (query: string) => void;
   isDark: boolean;
   toggleTheme: () => void;
+  onToggleSidebar: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ searchQuery, setSearchQuery, isDark, toggleTheme }) => {
+export const Header: React.FC<HeaderProps> = ({ 
+  searchQuery, 
+  setSearchQuery, 
+  isDark, 
+  toggleTheme,
+  onToggleSidebar
+}) => {
   return (
     <header className={`flex items-center justify-between px-6 py-4 transition-colors ${isDark ? 'bg-[#1a1a1a] border-[#333]' : 'bg-white border-gray-200'
-      } border-b`}>
+      } border-b sticky top-0 z-40`}>
       <div className="flex items-center">
-        <h1 className="text-3xl font-bold text-[#ff4d00] tracking-tight">WonderPay</h1>
+        <button 
+          onClick={onToggleSidebar}
+          className="hover:opacity-80 transition-opacity active:scale-95 transform cursor-pointer"
+        >
+          <h1 className="text-3xl font-bold text-[#ff4d00] tracking-tight">WonderPay</h1>
+        </button>
       </div>
 
       <div className="flex-1 max-w-2xl mx-12">
