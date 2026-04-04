@@ -2,7 +2,7 @@ import React from 'react';
 import { 
   LayoutDashboard, 
   Users, 
-  CreditCard, 
+  Receipt, 
   BarChart3, 
   Settings,
   HelpCircle,
@@ -20,7 +20,7 @@ interface SidebarProps {
 const navItems = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard, active: false },
   { id: 'personnel', label: 'Personnel', icon: Users, active: false },
-  { id: 'payments', label: 'Payments', icon: CreditCard, active: true },
+  { id: 'payments', label: 'Payments', icon: Receipt, active: true },
   { id: 'analytics', label: 'Analytics', icon: BarChart3, active: false },
 ];
 
