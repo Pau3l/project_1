@@ -9,7 +9,7 @@ import {
   LogOut,
   ChevronLeft
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 
 interface SidebarProps {
   isExpanded: boolean;
