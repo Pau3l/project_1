@@ -1,46 +1,36 @@
 import React, { useState, useMemo } from 'react';
-import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  AreaChart, Area, Cell, PieChart, Pie, ReferenceLine
+import { 
+  Loader2, 
+  AlertCircle, 
+  DollarSign, 
+  Activity, 
+  TrendingUp, 
+  CreditCard, 
+  Plus, 
+  Trash2 
+} from 'lucide-react';
+import { 
+  ResponsiveContainer, 
+  AreaChart, 
+  Area, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip, 
+  ReferenceLine, 
+  PieChart, 
+  Pie, 
+  Cell, 
+  BarChart, 
+  Bar 
 } from 'recharts';
-import { AlertCircle, Loader2, TrendingUp, DollarSign, CreditCard, Activity, Plus, Trash2 } from 'lucide-react';
-
-// ============================================
-// TYPES
-// ============================================
-export interface Payment {
-  id: string;
-  amount: number;
-  method: 'Bank Transfer' | 'Cash' | 'Mobile Money' | 'Check' | 'Card';
-  date: string;
-  status: 'completed' | 'pending' | 'failed';
-  description?: string;
-}
-
-export interface ChartDataPoint {
-  name: string;
-  amount: number;
-  count: number;
-}
-
-export interface PieDataPoint {
-  name: string;
-  value: number;
-  color?: string;
-}
+import { PaymentRecord } from '../types';
+import { transformPaymentsToAnalytics, METHOD_COLORS } from '../utils/analytics-utils';
 
 // ============================================
 // CONSTANTS
 // ============================================
 const COLORS = ['#ff4d00', '#ff7b42', '#ffa985', '#ffd7c7', '#ff5500'];
-
-const METHOD_COLORS: Record<string, string> = {
-  'Bank Transfer': COLORS[0],
-  'Cash': COLORS[1],
-  'Mobile Money': COLORS[2],
-  'Check': COLORS[3],
-  'Card': COLORS[4],
-};
 
 // ============================================
 // STAT CARD COMPONENT (Internal)
@@ -56,14 +46,20 @@ interface StatCardProps {
 
 function StatCard({ label, value, icon, trend, isDark }: StatCardProps) {
   return (
-    <div className={`p-4 rounded-xl border ${isDark ? 'bg-[#1a1a1a] border-[#333]' : 'bg-white border-gray-200'}`}>
+    <div className={`p-4 rounded-xl border transition-all duration-300 ${
+      isDark ? 'bg-white/[0.03] border-white/[0.08] hover:bg-white/[0.05]' : 'bg-black/[0.01] border-black/[0.08] hover:bg-black/[0.02]'
+    }`}>
       <div className="flex items-center justify-between mb-2">
-        <span className={`text-xs font-medium ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>{label}</span>
-        <span className="text-[#ff4d00]">{icon}</span>
+        <span className={`text-[10px] font-bold uppercase tracking-wider ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>{label}</span>
+        <div className="p-1.5 bg-[#ff4d00]/10 rounded-lg border border-[#ff4d00]/20">
+          <span className="text-[#ff4d00]">{icon}</span>
+        </div>
       </div>
-      <div className="flex items-end justify-between">
-        <span className={`text-lg font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{value}</span>
-        <span className="text-xs font-medium text-green-500">{trend}</span>
+      <div className="flex items-end justify-between mt-3">
+        <span className={`text-xl font-black tracking-tight ${isDark ? 'text-white' : 'text-gray-900'}`}>{value}</span>
+        <div className="flex items-center gap-1 text-[#ff4d00]">
+           <span className="text-[10px] font-bold uppercase tracking-tighter">{trend}</span>
+        </div>
       </div>
     </div>
   );
@@ -74,38 +70,40 @@ function StatCard({ label, value, icon, trend, isDark }: StatCardProps) {
 // ============================================
 
 interface PaymentManagerProps {
-  payments: Payment[];
-  onPaymentsChange: (payments: Payment[]) => void;
+  payments: PaymentRecord[];
+  onPaymentsChange: (payments: PaymentRecord[]) => void;
   isDark?: boolean;
 }
 
 function PaymentManager({ payments, onPaymentsChange, isDark = true }: PaymentManagerProps) {
-  const [newPayment, setNewPayment] = useState<Partial<Payment>>({
+  const [newPayment, setNewPayment] = useState<Partial<PaymentRecord>>({
     amount: 0,
-    method: 'Bank Transfer',
+    method: 'Bank Transfer' as any,
     date: new Date().toISOString().split('T')[0],
-    status: 'completed'
+    status: 'Completed' as any
   });
 
   const handleAddPayment = () => {
     if (!newPayment.amount || newPayment.amount <= 0) return;
 
-    const payment: Payment = {
+    const payment: PaymentRecord = {
       id: Date.now().toString(),
       amount: Number(newPayment.amount),
-      method: newPayment.method as Payment['method'],
-      date: newPayment.date || new Date().toISOString(),
-      status: 'completed',
-      description: newPayment.description
+      workerName: 'New User',
+      method: (newPayment.method as any) || 'Bank Transfer',
+      date: newPayment.date || new Date().toISOString().split('T')[0],
+      status: 'Completed' as any,
+      recordedAt: new Date().toLocaleString(),
+      notes: newPayment.notes || ''
     };
 
     onPaymentsChange([...payments, payment]);
 
     setNewPayment({
       amount: 0,
-      method: 'Bank Transfer',
+      method: 'Bank Transfer' as any,
       date: new Date().toISOString().split('T')[0],
-      status: 'completed'
+      status: 'Completed' as any
     });
   };
 
@@ -123,7 +121,7 @@ function PaymentManager({ payments, onPaymentsChange, isDark = true }: PaymentMa
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div>
             <label className={`block text-xs font-medium mb-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-              Amount ($)
+              Amount (GH₵)
             </label>
             <input
               type="number"
@@ -205,7 +203,7 @@ function PaymentManager({ payments, onPaymentsChange, isDark = true }: PaymentMa
                 />
                 <div>
                   <p className={`font-medium text-sm ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                    ${payment.amount.toLocaleString()}
+                    GH₵{payment.amount.toLocaleString()}
                   </p>
                   <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
                     {payment.method} • {new Date(payment.date).toLocaleDateString()}
@@ -229,73 +227,11 @@ function PaymentManager({ payments, onPaymentsChange, isDark = true }: PaymentMa
   );
 }
 
-// ============================================
-// ANALYTICS DASHBOARD COMPONENT
-// ============================================
-
 interface AnalyticsDashboardProps {
-  payments: Payment[];
+  payments: PaymentRecord[];
   isDark?: boolean;
   isLoading?: boolean;
   error?: string | null;
-}
-
-function transformPaymentsToAnalytics(payments: Payment[]) {
-  // Calculate statistics
-  const totalAmount = payments.reduce((sum, p) => sum + p.amount, 0);
-  const completedPayments = payments.filter(p => p.status === 'completed');
-  const completedAmount = completedPayments.reduce((sum, p) => sum + p.amount, 0);
-  
-  // Group by method
-  const methodData = payments.reduce((acc: any[], payment) => {
-    const existing = acc.find(item => item.name === payment.method);
-    if (existing) {
-      existing.value += payment.amount;
-    } else {
-      acc.push({ 
-        name: payment.method, 
-        value: payment.amount,
-        color: METHOD_COLORS[payment.method] || COLORS[0]
-      });
-    }
-    return acc;
-  }, []);
-
-  // Group by date for trend
-  const trendData = payments.reduce((acc: any[], payment) => {
-    const date = new Date(payment.date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
-    const existing = acc.find(item => item.name === date);
-    if (existing) {
-      existing.amount += payment.amount;
-      existing.count += 1;
-    } else {
-      acc.push({ name: date, amount: payment.amount, count: 1 });
-    }
-    return acc;
-  }, []);
-
-  // Create byMethod stats
-  const byMethod = payments.reduce((acc: any, payment) => {
-    if (!acc[payment.method]) {
-      acc[payment.method] = 0;
-    }
-    acc[payment.method] += payment.amount;
-    return acc;
-  }, {});
-
-  return {
-    stats: {
-      total: totalAmount,
-      totalAmount,
-      completedAmount,
-      totalTransactions: payments.length,
-      average: payments.length > 0 ? totalAmount / payments.length : 0,
-      averageAmount: payments.length > 0 ? totalAmount / payments.length : 0,
-      byMethod
-    },
-    methodData,
-    trendData
-  };
 }
 
 export function AnalyticsDashboard({ payments, isDark = true, isLoading = false, error = null }: AnalyticsDashboardProps) {
@@ -304,19 +240,25 @@ export function AnalyticsDashboard({ payments, isDark = true, isLoading = false,
   }, [payments]);
 
   const theme = useMemo(() => ({
-    chartBg: isDark ? '#1a1a1a' : '#ffffff',
-    gridColor: isDark ? '#333' : '#e5e7eb',
-    textColor: isDark ? '#666' : '#9ca3af',
+    chartBg: 'transparent',
+    gridColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
+    textColor: isDark ? '#555' : '#aaa',
     primaryColor: COLORS[0],
   }), [isDark]);
 
   const TrendTooltip = ({ active, payload, label }: any) => {
     if (active && payload?.length) {
       return (
-        <div className={`p-3 rounded-lg border shadow-lg ${isDark ? 'bg-[#262626] border-[#404040]' : 'bg-white border-gray-200'}`}>
-          <p className={`text-xs font-medium mb-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>{label}</p>
-          <p className="text-sm font-bold text-[#ff4d00]">${payload[0].value.toLocaleString()}</p>
-          <p className={`text-xs mt-1 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>{payload[0].payload.count} payments</p>
+        <div 
+          className="p-3 rounded-xl shadow-2xl backdrop-blur-xl animate-in fade-in zoom-in-95 duration-200"
+          style={{
+            background: isDark ? 'rgba(26,26,26,0.95)' : 'rgba(255,255,255,0.95)',
+            border: isDark ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.1)'
+          }}
+        >
+          <p className={`text-[10px] font-bold uppercase tracking-wider mb-1 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>{label}</p>
+          <p className="text-sm font-black text-[#ff4d00]">GH₵{payload[0].value.toLocaleString()}</p>
+          <p className={`text-[10px] mt-1 font-medium ${isDark ? 'text-gray-600' : 'text-gray-500'}`}>{payload[0].payload.count} payments</p>
         </div>
       );
     }
@@ -331,7 +273,7 @@ export function AnalyticsDashboard({ payments, isDark = true, isLoading = false,
         <div className={`p-3 rounded-lg border shadow-lg ${isDark ? 'bg-[#262626] border-[#404040]' : 'bg-white border-gray-200'}`}>
           <p className="text-sm font-bold" style={{ color: data.payload.color }}>{data.name}</p>
           <p className={`text-xs mt-1 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-            ${data.value.toLocaleString()} ({percentage}%)
+            GH₵{data.value.toLocaleString()} ({percentage}%)
           </p>
         </div>
       );
@@ -364,21 +306,21 @@ export function AnalyticsDashboard({ payments, isDark = true, isLoading = false,
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <StatCard
           label="Total Volume"
-          value={`$${stats.total.toLocaleString()}`}
+          value={`GH₵${stats.total.toLocaleString()}`}
           icon={<DollarSign className="w-4 h-4" />}
           trend={`${payments.length} payments`}
           isDark={isDark}
         />
         <StatCard
           label="Average"
-          value={`$${Math.round(stats.average).toLocaleString()}`}
+          value={`GH₵${Math.round(stats.average).toLocaleString()}`}
           icon={<Activity className="w-4 h-4" />}
           trend="per transaction"
           isDark={isDark}
         />
         <StatCard
           label="Peak Month"
-          value={trendData.length ? `$${Math.max(...trendData.map(d => d.amount)).toLocaleString()}` : '$0'}
+          value={trendData.length ? `GH₵${Math.max(...trendData.map(d => d.amount)).toLocaleString()}` : 'GH₵0'}
           icon={<TrendingUp className="w-4 h-4" />}
           trend="highest volume"
           isDark={isDark}
@@ -395,8 +337,8 @@ export function AnalyticsDashboard({ payments, isDark = true, isLoading = false,
       {/* Charts Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Trend Chart */}
-        <div className={`p-6 rounded-xl border ${isDark ? 'bg-[#1a1a1a] border-[#333]' : 'bg-white border-gray-200'}`}>
-          <h3 className={`text-sm font-bold mb-6 uppercase tracking-wider ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+        <div className={`p-6 rounded-2xl border transition-all duration-300 ${isDark ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-black/[0.01] border-black/[0.08]'}`}>
+          <h3 className={`text-[11px] font-black mb-6 uppercase tracking-[0.2em] ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
             Payment Volume Trend
           </h3>
           <div className="h-[300px]">
@@ -411,7 +353,7 @@ export function AnalyticsDashboard({ payments, isDark = true, isLoading = false,
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke={theme.gridColor} vertical={false} />
                   <XAxis dataKey="name" stroke={theme.textColor} fontSize={11} tickLine={false} axisLine={false} dy={10} />
-                  <YAxis stroke={theme.textColor} fontSize={11} tickLine={false} axisLine={false} tickFormatter={(val) => `$${(val / 1000).toFixed(0)}k`} dx={-10} />
+                  <YAxis stroke={theme.textColor} fontSize={11} tickLine={false} axisLine={false} tickFormatter={(val) => `GH₵${(val / 1000).toFixed(0)}k`} dx={-10} />
                   <Tooltip content={<TrendTooltip />} />
                   <Area type="monotone" dataKey="amount" stroke={theme.primaryColor} strokeWidth={3} fillOpacity={1} fill="url(#colorAmount)" />
                   <ReferenceLine y={stats.average} stroke={isDark ? '#444' : '#ddd'} strokeDasharray="3 3" />
@@ -426,8 +368,8 @@ export function AnalyticsDashboard({ payments, isDark = true, isLoading = false,
         </div>
 
         {/* Pie Chart */}
-        <div className={`p-6 rounded-xl border ${isDark ? 'bg-[#1a1a1a] border-[#333]' : 'bg-white border-gray-200'}`}>
-          <h3 className={`text-sm font-bold mb-6 uppercase tracking-wider ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+        <div className={`p-6 rounded-2xl border transition-all duration-300 ${isDark ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-black/[0.01] border-black/[0.08]'}`}>
+          <h3 className={`text-[11px] font-black mb-6 uppercase tracking-[0.2em] ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
             Payment Methods
           </h3>
           <div className="h-[300px] flex items-center">
@@ -443,7 +385,7 @@ export function AnalyticsDashboard({ payments, isDark = true, isLoading = false,
                       dataKey="value"
                     >
                       {methodData.map((entry, index) => (
-                        <Cell key={`cell-${entry.name}-${index}`} fill={entry.color} stroke={isDark ? '#1a1a1a' : '#ffffff'} strokeWidth={2} />
+                        <Cell key={`cell-${entry.name}-${index}`} fill={entry.color} stroke={isDark ? 'rgba(26,26,26,0.8)' : '#ffffff'} strokeWidth={2} />
                       ))}
                     </Pie>
                     <Tooltip content={<PieTooltip />} />
@@ -475,8 +417,8 @@ export function AnalyticsDashboard({ payments, isDark = true, isLoading = false,
         </div>
 
         {/* Bar Chart */}
-        <div className={`p-6 rounded-xl border md:col-span-2 ${isDark ? 'bg-[#1a1a1a] border-[#333]' : 'bg-white border-gray-200'}`}>
-          <h3 className={`text-sm font-bold mb-6 uppercase tracking-wider ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+        <div className={`p-6 rounded-2xl border md:col-span-2 transition-all duration-300 ${isDark ? 'bg-white/[0.02] border-white/[0.08]' : 'bg-black/[0.01] border-black/[0.08]'}`}>
+          <h3 className={`text-[11px] font-black mb-6 uppercase tracking-[0.2em] ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
             Monthly Comparison
           </h3>
           <div className="h-[300px]">
@@ -485,7 +427,7 @@ export function AnalyticsDashboard({ payments, isDark = true, isLoading = false,
                 <BarChart data={trendData}>
                   <CartesianGrid strokeDasharray="3 3" stroke={theme.gridColor} vertical={false} />
                   <XAxis dataKey="name" stroke={theme.textColor} fontSize={11} tickLine={false} axisLine={false} dy={10} />
-                  <YAxis stroke={theme.textColor} fontSize={11} tickLine={false} axisLine={false} tickFormatter={(val) => `$${(val / 1000).toFixed(0)}k`} dx={-10} />
+                  <YAxis stroke={theme.textColor} fontSize={11} tickLine={false} axisLine={false} tickFormatter={(val) => `GH₵${(val / 1000).toFixed(0)}k`} dx={-10} />
                   <Tooltip content={<TrendTooltip />} cursor={{ fill: isDark ? '#252525' : '#f3f4f6' }} />
                   <Bar dataKey="amount" fill={theme.primaryColor} radius={[6, 6, 0, 0]} barSize={45}>
                     {trendData.map((entry, index) => (
@@ -515,10 +457,10 @@ interface PaymentAnalyticsPageProps {
 }
 
 export default function PaymentAnalyticsPage({ isDark = true }: PaymentAnalyticsPageProps) {
-  const [payments, setPayments] = useState<Payment[]>([
-    { id: '1', amount: 4000, method: 'Bank Transfer', date: '2024-01-15', status: 'completed' },
-    { id: '2', amount: 3000, method: 'Cash', date: '2024-02-20', status: 'completed' },
-    { id: '3', amount: 2000, method: 'Mobile Money', date: '2024-03-10', status: 'completed' },
+  const [payments, setPayments] = useState<PaymentRecord[]>([
+    { id: '1', amount: 4000, method: 'Bank Transfer', date: '2024-01-15', status: 'Completed', workerName: 'Admin', recordedAt: '2024-01-15', notes: '' },
+    { id: '2', amount: 3000, method: 'Cash', date: '2024-02-20', status: 'Completed', workerName: 'Admin', recordedAt: '2024-02-20', notes: '' },
+    { id: '3', amount: 2000, method: 'Mobile Money', date: '2024-03-10', status: 'Completed', workerName: 'Admin', recordedAt: '2024-03-10', notes: '' },
   ]);
 
   return (

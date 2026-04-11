@@ -12,17 +12,16 @@ import {
   HelpCircle,
   Wallet,
   Settings,
-  Users
 } from 'lucide-react';
 
 interface SidebarProps {
-  activeTab: 'payment' | 'analytic' | 'employees';
-  setActiveTab: (tab: 'payment' | 'analytic' | 'employees') => void;
+  activeTab: 'payment' | 'analytic';
+  onTabChange: (tab: 'payment' | 'analytic') => void;
   isDark: boolean;
   toggleTheme: () => void;
   collapsed: boolean;
-  setCollapsed: (collapsed: boolean) => void;
-  onOpenShortcuts?: () => void;
+  onCollapsedChange: (collapsed: boolean) => void;
+  onOpenShortcuts: () => void;
   onOpenSettings?: () => void;
   showWallet?: boolean;
   showKnowledgeBase?: boolean;
@@ -32,7 +31,7 @@ interface NavItem {
   id: string;
   label: string;
   icon: React.ReactNode;
-  tab: 'payment' | 'analytic' | 'employees';
+  tab?: 'payment' | 'analytic';
   badge?: number;
   section: 'main' | 'secondary';
 }
@@ -41,18 +40,17 @@ const NAV_ITEMS: NavItem[] = [
   { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-5 h-5" />, tab: 'payment', section: 'main' },
   { id: 'payments', label: 'Payments', icon: <CreditCard className="w-5 h-5" />, tab: 'payment', section: 'main', badge: 3 },
   { id: 'analytics', label: 'Analytics', icon: <TrendingUp className="w-5 h-5" />, tab: 'analytic', section: 'main' },
-  { id: 'employees', label: 'Employees', icon: <Users className="w-5 h-5" />, tab: 'employees', section: 'main' },
 ];
 
 export const Sidebar: React.FC<SidebarProps> = ({
   activeTab,
-  setActiveTab,
+  onTabChange,
   isDark,
   toggleTheme,
   collapsed,
-  setCollapsed,
-  onOpenShortcuts = () => {},
-  onOpenSettings = () => {},
+  onCollapsedChange,
+  onOpenShortcuts,
+  onOpenSettings,
   showWallet = true,
   showKnowledgeBase = true,
 }) => {
@@ -64,12 +62,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
     if (item.id === 'dashboard') return activeTab === 'payment';
     if (item.id === 'payments') return activeTab === 'payment';
     if (item.id === 'analytics') return activeTab === 'analytic';
-    if (item.id === 'employees') return activeTab === 'employees';
     return false;
   };
 
   const handleNavClick = (item: NavItem) => {
-    setActiveTab(item.tab);
+    if (item.tab) {
+      onTabChange(item.tab);
+    }
   };
 
   return (
@@ -108,10 +107,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         )}
 
         {collapsed && (
-          <div 
-            onClick={() => setCollapsed(false)}
-            className="w-10 h-10 rounded-xl flex items-center justify-center overflow-hidden bg-gradient-to-br from-[#ff4d00]/20 to-transparent border border-[#ff4d00]/20 shadow-[0_0_15px_rgba(255,77,0,0.15)] transition-all duration-500 hover:shadow-[0_0_20px_rgba(255,77,0,0.3)] hover:scale-110 cursor-pointer group"
-          >
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center overflow-hidden bg-gradient-to-br from-[#ff4d00]/20 to-transparent border border-[#ff4d00]/20 shadow-[0_0_15px_rgba(255,77,0,0.15)] transition-all duration-500 hover:shadow-[0_0_20px_rgba(255,77,0,0.3)] group-hover:scale-110">
             <img 
               src="/favicon.png" 
               alt="WonderPay Favicon" 
@@ -122,7 +118,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
         {!collapsed && (
           <button
-            onClick={() => setCollapsed(true)}
+            onClick={() => onCollapsedChange(true)}
             className={`
               p-1.5 rounded-md transition-all duration-200
               ${isDark
@@ -138,6 +134,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* ── Wallet Balance Card ── */}
+      {/* Renders conditionally based on global Settings state. If toggled off, ignores rest. */}
       {showWallet && (
         <div className={`pt-4 pb-2 transition-all duration-300 ${collapsed ? 'px-2' : 'px-4'}`}>
           {!collapsed ? (
@@ -168,7 +165,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           ) : (
             <div className="flex items-center justify-center">
               <button
-                 onClick={() => setCollapsed(false)}
+                 onClick={() => onCollapsedChange(false)}
                  className={`
                 relative w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300
                 ${isDark ? 'bg-white/[0.03] text-gray-400 hover:bg-white/[0.08] hover:text-[#ff4d00]' : 'bg-black/[0.02] text-gray-500 hover:bg-black/[0.05] hover:text-[#ff4d00]'}
@@ -281,6 +278,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </nav>
 
       {/* ── Support & Knowledge Base ── */}
+      {/* Conditionally rendered based on global settings. Also safely hidden if sidebar is collapsed to avoid layout breakage. */}
       {showKnowledgeBase && !collapsed && (
         <div className="px-4 py-4">
           <div className={`
@@ -323,14 +321,33 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
       )}
 
+      {/* ── Expand Button (collapsed only) ── */}
+      {collapsed && (
+        <div className="px-3 pb-2">
+          <button
+            onClick={() => onCollapsedChange(false)}
+            className={`
+              w-full flex items-center justify-center py-2.5 rounded-lg transition-all duration-200
+              ${isDark
+                ? 'hover:bg-white/[0.06] text-gray-500 hover:text-gray-300'
+                : 'hover:bg-black/[0.04] text-gray-400 hover:text-gray-600'
+              }
+            `}
+            title="Expand sidebar"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </button>
+        </div>
+      )}
 
       {/* ── Theme Toggle Footer ── */}
+      {/* Contains global app actions like Settings, Keyboard Shortcuts, and Light/Dark modes */}
       <div className={`
         flex-shrink-0 border-t transition-colors duration-200
         ${isDark ? 'border-white/[0.06]' : 'border-black/[0.06]'}
         ${collapsed ? 'px-3 py-4' : 'px-4 py-4'}
       `}>
-        {/* Settings Action Button */}
+        {/* Settings Action Button - triggers App.tsx state onOpenSettings */}
         <button
           onClick={onOpenSettings}
           onMouseEnter={() => setHoveredItem('settings')}

@@ -6,32 +6,44 @@
 ## 2. Core Features & Functional Modules
 
 ### A. Transaction Management
-- **Audit Logging**: Create, edit, and archive payment records.
-- **Worker Assignment**: Link payments to specific personnel with identity verification.
-- **Financial Tracking**: Real-time amount calculation and currency management.
-- **Data Safety**: Multi-step deletion process with a confirmation alert and a 5-second "Undo" recovery window.
+- **Audit Logging**: Create, edit, and archive payment records with real-time state persistence.
+- **Worker Assignment**: Integrated Staff Directory link for identity-verified payments.
+- **Financial Tracking**: Real-time amount calculation and currency management in GHS (₵).
+- **Data Safety**: Multi-step deletion process with confirmation safeguards and a 5-second "Undo" recovery window.
 
-### B. Advanced Search & Filtering
-- **Multi-Criteria System**: Filter records by Date Range, Amount Thresholds, Worker Identity, and Transfer Method.
-- **Persistent State**: Filters maintain state across session views for consistent auditing.
+### B. Employee Management (Staff Directory)
+- **Centralized Registry**: Dedicated personnel management tab for adding, editing, and tracking workers.
+- **Dynamic Integration**: Real-time synchronization between the Employee list and the Payment creation workflow.
+- **Data Integrity**: Ensures payments are only recorded for verified system personnel.
 
-### C. Verification System
-- **Signature Capture**: Integrated verification signature pad for transaction validity.
-- **Secure View**: Modal-based signature asset viewer with encrypted-style branding.
+### C. Advanced Search & Filtering 2.0
+- **Multi-Criteria System**: Precise filtering by Date Range (Literal Text), Amount Thresholds (Literal Text), specific Worker, Payment Method, and Status.
+- **Interactive Dashboard Sync**: Clickable **Status Analytics Cards** automatically apply and synchronize filters across the entire application.
+- **Persistent State**: Filters maintain their strict configuration across session views for consistent auditing.
 
-### D. Navigation & UI
-- **Collapsible Sidebar**: Space-efficient navigation with "Mini-View" and "Full-View" states.
+### D. Advanced Reporting Engine
+- **Professional XLSX Export**: Native Excel workbook generation with multiple sheets:
+    - **Transaction Audit**: Itemized record list with bold formatting and currency alignment.
+    - **Executive Summary**: Aggregated totals, transaction counts, and method usage per worker.
+- **Formal PDF Generation**: High-fidelity printable reports with "Zero-Clutter" mode (automatically excludes Sidebar/Header) and integrated digital signatures.
+
+### E. Verification System
+- **Signature Capture**: High-performance "Silky Smooth" drawing canvas utilizing Coalesced Events for zero-latency verification.
+- **Secure View**: Modal-based signature asset viewer for secondary audit verification.
+
+### F. Navigation & UI
+- **Collapsible Sidebar**: Space-efficient navigation with Favicon-triggered expansion and integrated settings.
 - **Dynamic Widgets**:
     - **Wallet Balance**: At-a-glance financial summary.
-    - **System Health**: Real-time API/System status indicator.
-    - **Support Callout**: Direct link to professional documentation.
+    - **System Health**: Real-time heartbeat indicator confirming active background processing (Data Sync, Analytics recalculation, and System Optimization). The "Activity Pulse" animation serves as a visual guarantee that the LocalStorage persistence engine is live and tracking every transaction.
 
 ## 3. Design Philosophy
-- **Aesthetic**: Modern Glassmorphism (Backdrop Blurs, Semi-transparency).
+- **Aesthetic**: Modern Glassmorphism (Backdrop Blurs, Semi-transparency, Layered Depths).
 - **Identity**: Dark backgrounds with high-contrast Orange (`#ff4d00`) accenting.
-- **Interaction**: High-performance animations and micro-interactions for a "tactile" digital experience.
+- **Interaction**: High-performance animations and tactile micro-interactions.
 
 ## 4. Technical Architecture
-- **Client-Side**: Single Page Application (SPA).
-- **Communication**: RESTful interactions with backend services.
-- **Performance**: Virtualized tables and optimized canvas drawing for signature tracking.
+- **Framework**: React + Vite (Single Page Application).
+- **Styling**: Tailwind CSS for high-fidelity responsive layout.
+- **Data Handling**: Synchronous state management with LocalStorage persistence.
+- **Performance**: Optimized canvas drawing and virtualized component rendering for large datasets.

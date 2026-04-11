@@ -18,8 +18,6 @@ import {
   Trash2,
 } from "lucide-react";
 import { PaymentRecord, PaymentStatus } from "../types";
-import { Employee } from "./employee-table";
-
 
 interface PaymentModalProps {
   onSave: (
@@ -30,10 +28,7 @@ interface PaymentModalProps {
   trigger?: React.ReactNode;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
-  employees?: Employee[];
-  isDark?: boolean;
 }
-
 
 const MOCK_WORKERS = [
   "Alex Johnson",
@@ -133,10 +128,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
   trigger,
   open: controlledOpen,
   onOpenChange,
-  employees = [],
-  isDark = true,
 }) => {
-
   const [internalOpen, setInternalOpen] = useState(false);
   const open =
     controlledOpen !== undefined
@@ -366,10 +358,9 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
     setOpen(false);
   };
 
-  const filteredWorkers = (employees.length > 0 ? employees.map(e => e.name) : MOCK_WORKERS).filter((w) =>
+  const filteredWorkers = MOCK_WORKERS.filter((w) =>
     w.toLowerCase().includes(workerSearch.toLowerCase()),
   );
-
 
   const currentStatus = STATUS_OPTIONS.find(s => s.value === formData.status) || STATUS_OPTIONS[0];
 
@@ -381,13 +372,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
         )}
         <Dialog.Portal>
           <Dialog.Overlay className="fixed inset-0 bg-black/40 backdrop-blur-md z-50 animate-in fade-in duration-300" />
-          <Dialog.Content 
-            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[700px] rounded-xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)] z-50 overflow-hidden focus:outline-none flex flex-col max-h-[95vh] backdrop-blur-2xl animate-in zoom-in-95 fade-in duration-300"
-            style={{
-              background: isDark ? 'rgba(13,13,13,0.9)' : 'rgba(255,255,255,0.95)',
-              border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.08)'
-            }}
-          >
+          <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[700px] bg-[#0d0d0d]/90 border border-white/[0.08] rounded-xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.6)] z-50 overflow-hidden focus:outline-none flex flex-col max-h-[95vh] backdrop-blur-2xl animate-in zoom-in-95 fade-in duration-300">
             <Dialog.Title className="sr-only">
               {initialData
                 ? "Update Payment Record"
@@ -410,23 +395,23 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                   )}
                 </div>
                 <div>
-                  <h3 className={`text-sm font-bold tracking-tight ${isDark ? "text-white" : "text-gray-900"}`}>
+                  <h3 className="text-sm font-bold text-white tracking-tight">
                     {initialData ? "Update Record" : "New Payment"}
                   </h3>
-                  <p className={`text-[10px] font-medium uppercase tracking-widest ${isDark ? "text-gray-500" : "text-gray-400"}`}>
+                  <p className="text-[10px] text-gray-500 font-medium uppercase tracking-widest">
                     WonderPay Financial Management
                   </p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <button className={`p-2 rounded-lg transition-all duration-200 ${isDark ? "hover:bg-white/[0.05] text-gray-500 hover:text-gray-300" : "hover:bg-black/[0.05] text-gray-400 hover:text-gray-600"}`}>
+                <button className="p-2 rounded-lg hover:bg-white/[0.05] text-gray-500 hover:text-gray-300 transition-all duration-200">
                   <Minus className="w-4 h-4" />
                 </button>
-                <button className={`p-2 rounded-lg transition-all duration-200 ${isDark ? "hover:bg-white/[0.05] text-gray-500 hover:text-gray-300" : "hover:bg-black/[0.05] text-gray-400 hover:text-gray-600"}`}>
+                <button className="p-2 rounded-lg hover:bg-white/[0.05] text-gray-500 hover:text-gray-300 transition-all duration-200">
                   <Square className="w-3.5 h-3.5" />
                 </button>
                 <Dialog.Close asChild>
-                  <button className={`p-2 rounded-lg transition-all duration-200 ${isDark ? "hover:bg-red-500/10 hover:text-red-400 text-gray-500" : "hover:bg-red-50 hover:text-red-500 text-gray-400"}`}>
+                  <button className="p-2 rounded-lg hover:bg-red-500/10 hover:text-red-400 text-gray-500 transition-all duration-200">
                     <X className="w-4 h-4" />
                   </button>
                 </Dialog.Close>
@@ -450,11 +435,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                   <input
                     type="text"
                     placeholder="Type name..."
-                    className={`${
-                      isDark 
-                        ? "bg-white/[0.03] border-white/[0.08] text-gray-200 focus:border-[#ff4d00]/50 focus:ring-[#ff4d00]/20" 
-                        : "bg-black/[0.02] border-black/[0.08] text-gray-800 focus:border-[#ff4d00]/50 focus:ring-[#ff4d00]/10"
-                    } px-4 py-2.5 text-sm focus:outline-none focus:ring-1 rounded-xl w-full transition-all duration-200`}
+                    className="bg-white/[0.03] border border-white/[0.08] px-4 py-2.5 text-sm text-gray-200 focus:outline-none focus:border-[#ff4d00]/50 focus:ring-1 focus:ring-[#ff4d00]/20 rounded-xl w-full transition-all duration-200"
                     value={formData.workerName}
                     onChange={(e) => {
                       setFormData({ ...formData, workerName: e.target.value });
@@ -466,11 +447,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                   <button
                     type="button"
                     onClick={() => setIsWorkerModalOpen(true)}
-                    className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-semibold border transition-all duration-200 shadow-sm ${
-                      isDark 
-                        ? "bg-white/[0.05] hover:bg-white/[0.1] text-gray-300 hover:text-white border-white/[0.1]" 
-                        : "bg-black/[0.05] hover:bg-black/[0.08] text-gray-600 hover:text-gray-900 border-black/[0.08]"
-                    }`}
+                    className="flex items-center gap-2 px-5 py-2.5 bg-white/[0.05] hover:bg-white/[0.1] text-gray-300 hover:text-white rounded-xl text-xs font-semibold border border-white/[0.1] transition-all duration-200 shadow-sm"
                   >
                     <User className="w-4 h-4" />
                     <span>Select</span>
@@ -492,11 +469,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                     <input
                       type="text"
                       placeholder="₵0.00"
-                      className={`${
-                        isDark 
-                          ? "bg-white/[0.03] border-white/[0.08] text-gray-200 focus:border-[#ff4d00]/50 focus:ring-[#ff4d00]/20" 
-                          : "bg-black/[0.02] border-black/[0.08] text-gray-800 focus:border-[#ff4d00]/50 focus:ring-[#ff4d00]/10"
-                      } px-10 py-2.5 text-sm focus:outline-none focus:ring-1 rounded-xl w-full transition-all duration-200`}
+                      className="bg-white/[0.03] border border-white/[0.08] px-10 py-2.5 text-sm text-gray-200 focus:outline-none focus:border-[#ff4d00]/50 focus:ring-1 focus:ring-[#ff4d00]/20 rounded-xl w-full transition-all duration-200"
                       value={formData.amount}
                       onChange={(e) => {
                         setFormData({
@@ -530,11 +503,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                   <div className="relative">
                     <input
                       type="date"
-                      className={`${
-                        isDark 
-                          ? "bg-white/[0.03] border-white/[0.08] text-gray-200 focus:border-[#ff4d00]/50" 
-                          : "bg-black/[0.02] border-black/[0.08] text-gray-800 focus:border-[#ff4d00]/50"
-                      } px-4 py-2.5 text-sm rounded-xl w-full appearance-none transition-all duration-200`}
+                      className="bg-white/[0.03] border border-white/[0.08] px-4 py-2.5 text-sm text-gray-200 focus:outline-none focus:border-[#ff4d00]/50 rounded-xl w-full appearance-none transition-all duration-200"
                       value={formData.date}
                       onChange={(e) =>
                         setFormData({
@@ -556,11 +525,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                   </label>
                   <div className="relative">
                     <select
-                      className={`${
-                        isDark 
-                          ? "bg-white/[0.03] border-white/[0.08] text-gray-200 focus:border-[#ff4d00]/50" 
-                          : "bg-black/[0.02] border-black/[0.08] text-gray-800 focus:border-[#ff4d00]/50"
-                      } px-4 py-2.5 text-sm rounded-xl w-full appearance-none transition-all duration-200 focus:outline-none`}
+                      className="bg-white/[0.03] border border-white/[0.08] px-4 py-2.5 text-sm text-gray-200 focus:outline-none focus:border-[#ff4d00]/50 rounded-xl w-full appearance-none transition-all duration-200"
                       value={formData.method}
                       onChange={(e) =>
                         setFormData({
@@ -589,9 +554,9 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                   <button
                     type="button"
                     onClick={() => setIsStatusModalOpen(true)}
-                    className={`flex items-center gap-3 px-4 py-2.5 rounded-xl border transition-all duration-300 w-full text-left backdrop-blur-sm ${currentStatus.bgColor.replace('/10', isDark ? '/5' : '/20')} ${currentStatus.borderColor.replace('/30', isDark ? '/10' : '/30')} hover:border-[#ff4d00]/30 group`}
+                    className={`flex items-center gap-3 px-4 py-2.5 rounded-xl border transition-all duration-300 w-full text-left backdrop-blur-sm ${currentStatus.bgColor.replace('/10', '/5')} ${currentStatus.borderColor.replace('/30', '/10')} hover:border-[#ff4d00]/30 group`}
                   >
-                    <div className={`p-1.5 rounded-lg transition-transform duration-300 group-hover:scale-110 ${isDark ? "bg-white/[0.03]" : "bg-black/[0.03]"} ${currentStatus.color}`}>
+                    <div className={`p-1.5 rounded-lg bg-white/[0.03] transition-transform duration-300 group-hover:scale-110 ${currentStatus.color}`}>
                       {currentStatus.icon}
                     </div>
                     <div className="flex-1">
@@ -608,11 +573,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                     <button
                       type="button"
                       onClick={() => setIsStatusModalOpen(true)}
-                      className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold border transition-all duration-200 ${
-                        isDark 
-                          ? "bg-[#ff4d00]/5 hover:bg-[#ff4d00]/10 text-[#ff4d00] border-[#ff4d00]/20" 
-                          : "bg-[#ff4d00]/10 hover:bg-[#ff4d00]/15 text-[#ff4d00] border-[#ff4d00]/30"
-                      }`}
+                      className="flex items-center gap-2 px-5 py-2.5 bg-[#ff4d00]/5 hover:bg-[#ff4d00]/10 text-[#ff4d00] rounded-xl text-xs font-bold border border-[#ff4d00]/20 transition-all duration-200"
                     >
                       <RotateCcw className="w-4 h-4" />
                       <span>Action</span>
@@ -626,11 +587,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                   </label>
                   <textarea
                     placeholder="Enter any additional notes..."
-                    className={`w-full p-4 text-sm rounded-xl min-h-[80px] resize-none transition-all duration-200 focus:outline-none ${
-                       isDark 
-                        ? "bg-white/[0.03] border-white/[0.08] text-gray-300 focus:border-[#ff4d00]/50" 
-                        : "bg-black/[0.02] border-black/[0.08] text-gray-700 focus:border-[#ff4d00]/50"
-                    } border`}
+                    className="w-full bg-white/[0.03] border border-white/[0.08] p-4 text-sm text-gray-300 focus:outline-none focus:border-[#ff4d00]/50 rounded-xl min-h-[80px] resize-none transition-all duration-200"
                     value={formData.notes}
                     onChange={(e) =>
                       setFormData({
@@ -654,10 +611,8 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                          </span>
                        )}
                     </div>
-                    <div className={`rounded-xl overflow-hidden h-[130px] relative border-2 shadow-inner transition-colors duration-300 ${
-                      isDark ? 'bg-white' : 'bg-gray-100'
-                    } ${
-                      isTouched.signature && errors.signature ? 'border-red-500/50' : isDark ? 'border-white/[0.05]' : 'border-black/[0.05]'
+                    <div className={`bg-white rounded-xl overflow-hidden h-[130px] relative border-2 shadow-inner transition-colors duration-300 ${
+                      isTouched.signature && errors.signature ? 'border-red-500/50' : 'border-white/[0.05]'
                     }`}>
                       <canvas
                         ref={canvasRef}
@@ -676,11 +631,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                     <button
                       type="button"
                       onClick={clearSignature}
-                      className={`w-full py-2.5 rounded-xl text-xs font-bold transition-all duration-200 flex items-center justify-center gap-2 border ${
-                        isDark 
-                          ? "text-gray-400 hover:text-white border-white/[0.05] hover:border-white/[0.1] hover:bg-white/[0.02]" 
-                          : "text-gray-500 hover:text-gray-800 border-black/[0.05] hover:border-black/[0.1] hover:bg-black/[0.02]"
-                      }`}
+                      className="w-full py-2.5 rounded-xl text-gray-400 hover:text-white text-xs font-bold transition-all duration-200 flex items-center justify-center gap-2 border border-white/[0.05] hover:border-white/[0.1] hover:bg-white/[0.02]"
                     >
                       <RotateCcw className="w-4 h-4" />
                       <span>Clear Signature Pad</span>
@@ -688,16 +639,12 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                   </div>
                 )}
 
-                <div className={`pt-8 flex gap-4 sticky bottom-0 pb-2 mt-4 ${isDark ? "bg-[#0d0d0d]" : "bg-white"}`}>
+                <div className="pt-8 flex gap-4 sticky bottom-0 bg-[#0d0d0d] pb-2 mt-4">
                   <div className="flex-1 flex gap-3">
                     <Dialog.Close asChild>
                       <button
                         type="button"
-                        className={`flex-1 px-8 py-3.5 rounded-xl font-bold text-sm transition-all duration-200 border ${
-                          isDark 
-                            ? "text-gray-400 hover:text-white border-white/[0.05] hover:bg-white/[0.03]" 
-                            : "text-gray-600 hover:text-gray-900 border-black/[0.05] hover:bg-black/[0.03]"
-                        }`}
+                        className="flex-1 px-8 py-3.5 rounded-xl text-gray-400 hover:text-white font-bold text-sm transition-all duration-200 border border-white/[0.05] hover:bg-white/[0.03]"
                       >
                         Dismiss
                       </button>
@@ -742,13 +689,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
       >
         <Dialog.Portal>
           <Dialog.Overlay className="fixed inset-0 bg-black/40 backdrop-blur-md z-[60] animate-in fade-in duration-300" />
-          <Dialog.Content 
-            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[420px] rounded-2xl shadow-3xl z-[70] overflow-hidden focus:outline-none backdrop-blur-2xl animate-in zoom-in-95 duration-300"
-            style={{
-              background: isDark ? 'rgba(13,13,13,0.95)' : 'rgba(255,255,255,0.95)',
-              border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.08)'
-            }}
-          >
+          <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[420px] bg-[#0d0d0d]/95 border border-white/[0.08] rounded-2xl shadow-3xl z-[70] overflow-hidden focus:outline-none backdrop-blur-2xl animate-in zoom-in-95 duration-300">
             <Dialog.Title className="sr-only">
               Select Worker
             </Dialog.Title>
@@ -756,12 +697,12 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
               Choose a worker from the list to populate the payment form.
             </Dialog.Description>
 
-            <div className={`flex items-center justify-between px-5 py-4 border-b bg-white/[0.02] ${isDark ? "border-white/[0.06]" : "border-black/[0.06]"}`}>
+            <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.06] bg-white/[0.02]">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-[#ff4d00]/10 flex items-center justify-center rounded-lg border border-[#ff4d00]/20">
                   <User className="w-4 h-4 text-[#ff4d00]" />
                 </div>
-                <span className={`text-sm font-bold tracking-tight ${isDark ? "text-white" : "text-gray-900"}`}>Select Personnel</span>
+                <span className="text-sm font-bold text-white tracking-tight">Select Personnel</span>
               </div>
               <Dialog.Close asChild>
                 <button className="p-2 rounded-lg hover:bg-white/[0.05] text-gray-500 hover:text-gray-300 transition-all">
@@ -775,21 +716,17 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                 <input
                   type="text"
                   placeholder="Search personnel directory..."
-                  className={`w-full pl-10 pr-4 py-2.5 text-sm rounded-xl transition-all duration-200 focus:outline-none ${
-                    isDark 
-                    ? "bg-white/[0.03] border-white/[0.08] text-gray-200 focus:border-[#ff4d00]/50" 
-                    : "bg-black/[0.02] border-black/[0.08] text-gray-800 focus:border-[#ff4d00]/50"
-                  } border`}
+                  className="w-full bg-white/[0.03] border border-white/[0.08] pl-10 pr-4 py-2.5 text-sm text-gray-200 focus:outline-none focus:border-[#ff4d00]/50 rounded-xl transition-all duration-200"
                   value={workerSearch}
                   onChange={(e) =>
                     setWorkerSearch(e.target.value)
                   }
                   autoFocus
                 />
-                <Search className={`absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 transition-colors ${isDark ? "text-gray-500" : "text-gray-400 font-bold"} group-focus-within:text-[#ff4d00]`} />
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 group-focus-within:text-[#ff4d00] transition-colors" />
               </div>
 
-              <div className={`max-h-[350px] overflow-y-auto rounded-xl custom-scrollbar border ${isDark ? "border-white/[0.06] bg-white/[0.01]" : "border-black/[0.06] bg-black/[0.01]"}`}>
+              <div className="max-h-[350px] overflow-y-auto border border-white/[0.06] rounded-xl bg-white/[0.01] custom-scrollbar">
                 {filteredWorkers.length > 0 ? (
                   filteredWorkers.map((worker) => (
                     <button
@@ -803,14 +740,10 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                         setIsWorkerModalOpen(false);
                         setWorkerSearch("");
                       }}
-                      className={`w-full flex items-center justify-between px-4 py-3 text-left text-sm transition-all duration-200 group border-b last:border-b-0 ${
-                        isDark 
-                          ? "text-gray-300 hover:bg-[#ff4d00]/10 hover:text-white border-white/[0.05]" 
-                          : "text-gray-700 hover:bg-[#ff4d00]/10 hover:text-gray-900 border-black/[0.05]"
-                      }`}
+                      className="w-full flex items-center justify-between px-4 py-3 text-left text-sm text-gray-300 hover:bg-[#ff4d00]/10 hover:text-white transition-all duration-200 group border-b border-white/[0.05] last:border-b-0"
                     >
                       <div className="flex items-center gap-4">
-                        <div className={`w-9 h-9 rounded-full flex items-center justify-center text-[10px] font-black transition-all duration-300 group-hover:bg-[#ff4d00] group-hover:text-white ${isDark ? "bg-white/[0.05]" : "bg-black/[0.05]"}`}>
+                        <div className="w-9 h-9 bg-white/[0.05] rounded-full flex items-center justify-center text-[10px] font-black group-hover:bg-[#ff4d00] group-hover:text-white transition-all duration-300">
                           {worker
                             .split(" ")
                             .map((n) => n[0])
@@ -832,7 +765,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 
               <div className="flex justify-end pt-2">
                 <Dialog.Close asChild>
-                  <button className={`px-6 py-2.5 text-xs font-black uppercase tracking-widest transition-colors ${isDark ? "text-gray-400 hover:text-white" : "text-gray-500 hover:text-gray-900"}`}>
+                  <button className="px-6 py-2.5 text-gray-400 hover:text-white text-xs font-black uppercase tracking-widest transition-colors">
                     Close
                   </button>
                 </Dialog.Close>
@@ -849,13 +782,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
       >
         <Dialog.Portal>
           <Dialog.Overlay className="fixed inset-0 bg-black/40 backdrop-blur-md z-[60] animate-in fade-in duration-300" />
-          <Dialog.Content 
-            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[440px] rounded-2xl shadow-3xl z-[70] overflow-hidden focus:outline-none backdrop-blur-2xl animate-in zoom-in-95 duration-300"
-            style={{
-              background: isDark ? 'rgba(13,13,13,0.95)' : 'rgba(255,255,255,0.95)',
-              border: isDark ? '1px solid rgba(255,255,255,0.08)' : '1px solid rgba(0,0,0,0.08)'
-            }}
-          >
+          <Dialog.Content className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-[440px] bg-[#0d0d0d]/95 border border-white/[0.08] rounded-2xl shadow-3xl z-[70] overflow-hidden focus:outline-none backdrop-blur-2xl animate-in zoom-in-95 duration-300">
             <Dialog.Title className="sr-only">
               Select Payment Status
             </Dialog.Title>
@@ -863,15 +790,15 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
               Choose the current status of this payment transaction.
             </Dialog.Description>
 
-            <div className={`flex items-center justify-between px-5 py-4 border-b bg-white/[0.02] ${isDark ? "border-white/[0.06]" : "border-black/[0.06]"}`}>
+            <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.06] bg-white/[0.02]">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-[#ff4d00]/10 flex items-center justify-center rounded-lg border border-[#ff4d00]/20">
                   <AlertCircle className="w-4 h-4 text-[#ff4d00]" />
                 </div>
-                <span className={`text-sm font-bold tracking-tight ${isDark ? "text-white" : "text-gray-900"}`}>Lifecycle Status</span>
+                <span className="text-sm font-bold text-white tracking-tight">Lifecycle Status</span>
               </div>
               <Dialog.Close asChild>
-                <button className={`p-2 rounded-lg transition-all ${isDark ? "hover:bg-white/[0.05] text-gray-500 hover:text-gray-300" : "hover:bg-black/[0.05] text-gray-400 hover:text-gray-600"}`}>
+                <button className="p-2 rounded-lg hover:bg-white/[0.05] text-gray-500 hover:text-gray-300 transition-all">
                   <X className="w-4 h-4" />
                 </button>
               </Dialog.Close>
@@ -895,18 +822,18 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                       setIsStatusModalOpen(false);
                     }}
                     className={`w-full flex items-start gap-4 p-4 rounded-xl border transition-all duration-300 text-left group backdrop-blur-sm ${formData.status === status.value
-                        ? `${status.bgColor.replace('/10', isDark ? '/5' : '/20')} ${status.borderColor.replace('/30', isDark ? '/20' : '/30')} ring-1 ring-[#ff4d00]/20`
-                        : isDark ? 'bg-white/[0.02] border-white/[0.05] hover:border-white/[0.1] hover:bg-white/[0.04]' : 'bg-black/[0.02] border-black/[0.05] hover:border-black/[0.1] hover:bg-black/[0.04]'
+                        ? `${status.bgColor.replace('/10', '/5')} ${status.borderColor.replace('/30', '/20')} ring-1 ring-[#ff4d00]/20`
+                        : 'bg-white/[0.02] border-white/[0.05] hover:border-white/[0.1] hover:bg-white/[0.04]'
                       }`}
                   >
                     <div className={`mt-0.5 p-2 rounded-lg bg-white/[0.03] transition-transform duration-300 group-hover:scale-110 ${status.color}`}>
                       {status.icon}
                     </div>
-                    <div className={`flex-1`}>
-                      <div className={`font-bold text-sm tracking-tight ${formData.status === status.value ? status.color : isDark ? 'text-white' : 'text-gray-900'}`}>
+                    <div className="flex-1">
+                      <div className={`font-bold text-sm tracking-tight ${formData.status === status.value ? status.color : 'text-white'}`}>
                         {status.label}
                       </div>
-                      <div className={`text-[10px] mt-1 uppercase font-medium tracking-wide ${isDark ? "text-gray-500" : "text-gray-400"}`}>
+                      <div className="text-gray-500 text-[10px] mt-1 uppercase font-medium tracking-wide">
                         {status.description}
                       </div>
                     </div>
@@ -917,9 +844,9 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                 ))}
               </div>
 
-              <div className={`flex justify-end pt-3 border-t mt-4 ${isDark ? "border-white/[0.06]" : "border-black/[0.06]"}`}>
+              <div className="flex justify-end pt-3 border-t border-white/[0.06] mt-4">
                 <Dialog.Close asChild>
-                  <button className={`px-6 py-2.5 text-xs font-black uppercase tracking-widest transition-colors ${isDark ? "text-gray-400 hover:text-white" : "text-gray-500 hover:text-gray-900"}`}>
+                  <button className="px-6 py-2.5 text-gray-400 hover:text-white text-xs font-black uppercase tracking-widest transition-colors">
                     Close
                   </button>
                 </Dialog.Close>

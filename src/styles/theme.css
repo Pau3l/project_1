@@ -119,6 +119,20 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
+@keyframes premium-gradient {
+  0%, 100% { background-position: 0% 50%; }
+  50%       { background-position: 100% 50%; }
+}
+
+.animate-premium-gradient {
+  background: linear-gradient(135deg, #ff4d00, #ff8c00, #ffb347, #ff4d00);
+  background-size: 300% 300%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: premium-gradient 4s ease infinite;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
